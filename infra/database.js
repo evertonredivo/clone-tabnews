@@ -27,7 +27,9 @@ async function getNewConnectedClient() {
   return client;
 }
 
-export default {
+const database = {
   query,
   getNewConnectedClient,
 };
+
+export default database;
