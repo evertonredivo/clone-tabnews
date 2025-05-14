@@ -1,45 +1,49 @@
-import orquestrator from "tests/orchestrator.js";
+import orchestrator from "tests/orchestrator.js";
 
 beforeAll(async () => {
-  await orquestrator.waitForAllServices();
+  await orchestrator.waitForAllServices();
 });
 
-test("GET to /api/v1/status should return HTTP status code = 200;", async () => {
-  const response = await fetch("http://localhost:3000/api/v1/status");
-  expect(response.status).toBe(200);
-  const responseBody = await response.json();
-  expect(responseBody).toBeDefined();
+describe("GET /api/v1/status", () => {
+  describe("Anonymous user", () => {
+    test("Retrieving current system status", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/status");
+      expect(response.status).toBe(200);
+      const responseBody = await response.json();
+      expect(responseBody).toBeDefined();
 
-  /*
+      /*
    / Date Time ISO 8601 format: YYYY-MM-DDTHH:mm:ss.sssZ 
    / Z: Military time zone, (Z)ulu Time Zone, UTC+00:00
   */
-  const updatedAt = responseBody.updated_at;
-  const parsedUpdatedAt = new Date(updatedAt).toISOString();
-  expect(updatedAt).toEqual(parsedUpdatedAt);
+      const updatedAt = responseBody.updated_at;
+      const parsedUpdatedAt = new Date(updatedAt).toISOString();
+      expect(updatedAt).toEqual(parsedUpdatedAt);
 
-  /*
+      /*
    / Database Version Hard coded
    / See version in compose.yaml
   */
-  const dbVersion = "16.8";
-  expect(responseBody.dependencies.database.version).toBe(dbVersion);
+      const dbVersion = "16.8";
+      expect(responseBody.dependencies.database.version).toBe(dbVersion);
 
-  /*
+      /*
    / Database Max Connections
   */
-  const dbMaxConnections = 100;
-  expect(responseBody.dependencies.database.max_connections).toBe(
-    dbMaxConnections,
-  );
+      const dbMaxConnections = 100;
+      expect(responseBody.dependencies.database.max_connections).toBe(
+        dbMaxConnections,
+      );
 
-  /*
+      /*
    / Database Max Connections
   */
-  const openedConnections = 1;
-  expect(responseBody.dependencies.database.opened_connections).toBe(
-    openedConnections,
-  );
+      const openedConnections = 1;
+      expect(responseBody.dependencies.database.opened_connections).toBe(
+        openedConnections,
+      );
+    });
+  });
 });
 
 //console.log(await response.json()); Só pode chamar .json() uma vez no mesmo response, porque o body é um stream: depois que lê uma vez, acabou.
