@@ -5,12 +5,12 @@ async function waitForAllServices() {
   await waitForWebServer();
 
   async function waitForWebServer() {
-    return retry(feetchStatusPage, {
+    return retry(fetchStatusEndpoint, {
       retries: 100,
       maxTimeout: 1000,
     });
 
-    async function feetchStatusPage() {
+    async function fetchStatusEndpoint() {
       const response = await fetch("http://localhost:3000/api/v1/status");
       if (response.status !== 200) {
         throw Error();
