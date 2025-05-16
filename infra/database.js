@@ -1,20 +1,24 @@
 import { Client } from "pg";
+import { ServiceError } from "./errors.js";
 
 async function query(queryObject) {
   let client;
   try {
-    client = await getNewConnectedClient();
+    client = await getDBClient();
     const result = await client.query(queryObject);
     return result;
   } catch (error) {
-    console.error(error);
-    throw error;
+    const publicErrorObject = new ServiceError({
+      message: "Database Error: connection/query",
+      cause: error,
+    });
+    throw publicErrorObject;
   } finally {
     await client?.end();
   }
 }
 
-async function getNewConnectedClient() {
+async function getDBClient() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
@@ -29,7 +33,7 @@ async function getNewConnectedClient() {
 
 const database = {
   query,
-  getNewConnectedClient,
+  getDBClient,
 };
 
 export default database;
