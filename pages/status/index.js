@@ -16,6 +16,19 @@ export default function StatusPage() {
   );
 }
 
+function UpdatedAt() {
+  const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
+    refreshInterval: 2000,
+  });
+
+  let updatedAtText = "Carregando...";
+
+  if (!isLoading && data) {
+    updatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
+  }
+  return <div>Última atualização: {updatedAtText}</div>;
+}
+
 function DatabaseInfo() {
   const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 2000,
@@ -41,21 +54,3 @@ function DatabaseInfo() {
     </>
   );
 }
-
-function UpdatedAt() {
-  const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
-    refreshInterval: 2000,
-  });
-
-  let updatedAtText = "Carregando...";
-
-  if (!isLoading && data) {
-    updatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
-  }
-  return <div>Última atualização: {updatedAtText}</div>;
-}
-
-/* "database": {
-      "version": "16.8",
-      "max_connections": 100,
-      "opened_connections": 1 */
